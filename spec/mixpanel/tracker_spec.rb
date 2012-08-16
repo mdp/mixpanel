@@ -43,27 +43,29 @@ describe Mixpanel::Tracker do
       end
 
       it "should call request method with distinct_id if available" do
+        time = Time.now.utc.to_i
         opts = { :distinct_id => "MisterClicky" }
         @mixpanel = Mixpanel::Tracker.new(MIX_PANEL_TOKEN, @env = {"HTTP_X_FORWARDED_FOR" => "127.0.0.1"}, opts)
 
         params = {:event => "ClickClick", :properties =>
-          {:token => MIX_PANEL_TOKEN, :time => Time.now.utc.to_i, :ip => '127.0.0.1', :distinct_id => "MisterClicky"}
+          {:token => MIX_PANEL_TOKEN, :time => time, :ip => '127.0.0.1', :distinct_id => "MisterClicky"}
         }
 
         @mixpanel.should_receive(:request).with(params).and_return("1")
-        @mixpanel.track_event("ClickClick")
+        @mixpanel.track_event("ClickClick", :time => time)
       end
 
       it "should allow for setting of disctinct_id after initialization" do
+        time = Time.now.utc.to_i
         @mixpanel = Mixpanel::Tracker.new(MIX_PANEL_TOKEN, @env = {"HTTP_X_FORWARDED_FOR" => "127.0.0.1"})
 
         params = {:event => "ClickClick", :properties =>
-          {:token => MIX_PANEL_TOKEN, :time => Time.now.utc.to_i, :ip => '127.0.0.1', :distinct_id => "MisterClicky"}
+          {:token => MIX_PANEL_TOKEN, :time => time, :ip => '127.0.0.1', :distinct_id => "MisterClicky"}
         }
 
         @mixpanel.distinct_id = 'MisterClicky'
         @mixpanel.should_receive(:request).with(params).and_return("1")
-        @mixpanel.track_event("ClickClick")
+        @mixpanel.track_event("ClickClick", :time => time)
       end
     end
   end
